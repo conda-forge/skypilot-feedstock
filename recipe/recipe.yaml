@@ -42,7 +42,7 @@ outputs:
         - python-dotenv
         - rich
         - tabulate
-        - typing-extensions
+        - typing_extensions
         - filelock >=3.6.0
         - packaging
         - psutil
@@ -295,7 +295,7 @@ outputs:
         - setuptools
         - pip
       run:
-        - python-kubernetes >=20.0.0
+        - python-kubernetes !=32.0.0,>=20.0.0
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
@@ -394,17 +394,17 @@ outputs:
         - setuptools
         - pip
       run:
-        - protobuf !=3.19.5,>=3.15.3
-        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3
       # Take the intersection of all grpcio requirements to keep this noarch
-      # py<3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.32.0
       # py<3.10, osx
         - grpcio !=1.48.0,<=1.49.1,>=1.32.0
-      # py>=3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.42.0
       # py>=3.10, osx
         - grpcio !=1.48.0,<=1.49.1,>=1.42.0
+      # py<3.10, not osx
+        - grpcio !=1.48.0,<=1.51.3,>=1.32.0
+      # py>=3.10, not osx
+        - grpcio !=1.48.0,<=1.51.3,>=1.42.0
+        - protobuf !=3.19.5,>=3.15.3
+        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
