@@ -1,5 +1,5 @@
 context:
-  version: "0.8.0"
+  version: "0.8.1"
   python_min: '3.9'
 
 recipe:
@@ -8,7 +8,7 @@ recipe:
 
 source:
   - url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-    sha256: 1476748cf4a5ee0373a58e391af4af36580ac79d740e8f231a0f735d1ae47445
+    sha256: 03f456a48ceed017914b40b683afe4de60bd39653638602337060198079766a6
 
 build:
   script: ${{ PYTHON }} -m pip install .
@@ -28,7 +28,7 @@ outputs:
         - pip
       run:
         - python >=${{ python_min }}
-        - wheel
+        - wheel <0.46.0
         - cachetools
         - click >=7.0
         - colorama
