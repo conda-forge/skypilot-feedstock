@@ -28,7 +28,7 @@ outputs:
         - pip
       run:
         - python >=${{ python_min }}
-        - wheel
+        - wheel <0.46.0
         - cachetools
         - click >=7.0
         - colorama
