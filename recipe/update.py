@@ -39,12 +39,10 @@ def is_required_for_extras(requirement: Requirement, extras: Sequence[str]) -> b
 def patch_upstream_requirements(requirements: Sequence[str]) -> Sequence[str]:
     """
     These markers are complicated to evaluate:
-        grpcio!=1.48.0,<=1.49.1,>=1.32.0; (python_version < "3.10" and sys_platform == "darwin") and extra == "all"
-        grpcio!=1.48.0,<=1.49.1,>=1.32.0; (python_version < "3.10" and sys_platform == "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.49.1,>=1.42.0; (python_version >= "3.10" and sys_platform == "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.49.1,>=1.42.0; (python_version >= "3.10" and sys_platform == "darwin") and extra == "all"
-        grpcio!=1.48.0,<=1.51.3,>=1.42.0; (python_version >= "3.10" and sys_platform != "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.51.3,>=1.42.0; (python_version >= "3.10" and sys_platform != "darwin") and extra == "all"
+        grpcio!=1.48.0,>=1.32.0; python_version < "3.10" and extra == "all"
+        grpcio!=1.48.0,>=1.32.0; python_version < "3.10" and extra == "remote"
+        grpcio!=1.48.0,>=1.42.0; python_version >= "3.10" and extra == "remote"
+        grpcio!=1.48.0,>=1.42.0; python_version >= "3.10" and extra == "all"
     We remove the part that looks like this:
         (python_version >= "3.10" and sys_platform != "darwin") and
     Then we are left with combination of all the above requirements which is still satisfiable.
@@ -53,7 +51,7 @@ def patch_upstream_requirements(requirements: Sequence[str]) -> Sequence[str]:
     provided by uvicorn-standard.
     """
     result = [
-        re.sub(r'\(python_version .+ "3\.10" and sys_platform .= "darwin"\) and ', '', req)
+        re.sub(r'python_version .+ "3\.10" and ', '', req)
         for req in requirements
     ]
     result = [
