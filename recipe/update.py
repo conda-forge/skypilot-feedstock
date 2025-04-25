@@ -39,24 +39,27 @@ def is_required_for_extras(requirement: Requirement, extras: Sequence[str]) -> b
 def patch_upstream_requirements(requirements: Sequence[str]) -> Sequence[str]:
     """
     These markers are complicated to evaluate:
-        grpcio!=1.48.0,<=1.49.1,>=1.32.0; (python_version < "3.10" and sys_platform == "darwin") and extra == "all"
-        grpcio!=1.48.0,<=1.49.1,>=1.32.0; (python_version < "3.10" and sys_platform == "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.49.1,>=1.42.0; (python_version >= "3.10" and sys_platform == "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.49.1,>=1.42.0; (python_version >= "3.10" and sys_platform == "darwin") and extra == "all"
-        grpcio!=1.48.0,<=1.51.3,>=1.42.0; (python_version >= "3.10" and sys_platform != "darwin") and extra == "remote"
-        grpcio!=1.48.0,<=1.51.3,>=1.42.0; (python_version >= "3.10" and sys_platform != "darwin") and extra == "all"
+        grpcio!=1.48.0,>=1.32.0; python_version < "3.10" and extra == "all"
+        grpcio!=1.48.0,>=1.32.0; python_version < "3.10" and extra == "remote"
+        grpcio!=1.48.0,>=1.42.0; python_version >= "3.10" and extra == "remote"
+        grpcio!=1.48.0,>=1.42.0; python_version >= "3.10" and extra == "all"
     We remove the part that looks like this:
         (python_version >= "3.10" and sys_platform != "darwin") and
     Then we are left with combination of all the above requirements which is still satisfiable.
 
-    On conda-forge we have ray[default] provided by ray-default.
+    On conda-forge we have ray[default] provided by ray-default and uvicorn[standard]
+    provided by uvicorn-standard.
     """
     result = [
-        re.sub(r'\(python_version .+ "3\.10" and sys_platform .= "darwin"\) and ', '', req)
+        re.sub(r'python_version .+ "3\.10" and ', '', req)
         for req in requirements
     ]
     result = [
         re.sub(r'^ray\[default\]', 'ray-default', req)
+        for req in result
+    ]
+    result = [
+        re.sub(r'^uvicorn\[standard\]', 'uvicorn-standard', req)
         for req in result
     ]
     return result
@@ -138,7 +141,7 @@ if __name__ == "__main__":
         if extra == "all":
             logger.info("Skipping 'all' extra because it's excessive.")
             continue
-        if extra in ["cudo", "ibm", "azure", "runpod", "do", "vast"]:
+        if extra in ["cudo", "ibm", "azure", "runpod", "do", "vast", "nebius"]:
             logger.info(f"Skipping '{extra}' extra because it's not on conda-forge.")
             continue
         if len(requirements_for_extras[extra]) == 0:

@@ -1,5 +1,5 @@
 context:
-  version: "0.8.1"
+  version: "0.9.0"
   python_min: '3.9'
 
 recipe:
@@ -8,7 +8,7 @@ recipe:
 
 source:
   - url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-    sha256: 03f456a48ceed017914b40b683afe4de60bd39653638602337060198079766a6
+    sha256: fa5d698fd1f8597b693fc258e3349abb0636b227d387f6034631b2490bf0a732
 
 build:
   script: ${{ PYTHON }} -m pip install .
@@ -49,6 +49,14 @@ outputs:
         - pulp
         - pyyaml !=5.4.*,>3.13
         - requests
+        - fastapi
+        - uvicorn-standard
+        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3,>2
+        - python-multipart
+        - aiofiles
+        - httpx
+        - setproctitle
+        - omegaconf <2.5,>=2.4.0dev3
     tests:
       - python:
           python_version: ${{ python_min }}
@@ -296,6 +304,7 @@ outputs:
         - pip
       run:
         - python-kubernetes !=32.0.0,>=20.0.0
+        - websockets
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
@@ -319,7 +328,6 @@ outputs:
         - setuptools
         - pip
       run:
-        - ray-default !=2.6.0,>=2.2.0
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
@@ -396,15 +404,10 @@ outputs:
       run:
       # Take the intersection of all grpcio requirements to keep this noarch
       # py<3.10, osx
-        - grpcio !=1.48.0,<=1.49.1,>=1.32.0
+        - grpcio !=1.48.0,>=1.32.0
       # py>=3.10, osx
-        - grpcio !=1.48.0,<=1.49.1,>=1.42.0
-      # py<3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.32.0
-      # py>=3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.42.0
+        - grpcio !=1.48.0,>=1.42.0
         - protobuf !=3.19.5,>=3.15.3
-        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
