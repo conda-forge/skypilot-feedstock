@@ -138,7 +138,7 @@ if __name__ == "__main__":
         if extra == "all":
             logger.info("Skipping 'all' extra because it's excessive.")
             continue
-        if extra in ["cudo", "ibm", "azure", "runpod", "do", "vast"]:
+        if extra in ["cudo", "ibm", "azure", "runpod", "do", "vast", "nebius"]:
             logger.info(f"Skipping '{extra}' extra because it's not on conda-forge.")
             continue
         if len(requirements_for_extras[extra]) == 0:
