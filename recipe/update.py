@@ -49,7 +49,8 @@ def patch_upstream_requirements(requirements: Sequence[str]) -> Sequence[str]:
         (python_version >= "3.10" and sys_platform != "darwin") and
     Then we are left with combination of all the above requirements which is still satisfiable.
 
-    On conda-forge we have ray[default] provided by ray-default.
+    On conda-forge we have ray[default] provided by ray-default and uvicorn[standard]
+    provided by uvicorn-standard.
     """
     result = [
         re.sub(r'\(python_version .+ "3\.10" and sys_platform .= "darwin"\) and ', '', req)
@@ -57,6 +58,10 @@ def patch_upstream_requirements(requirements: Sequence[str]) -> Sequence[str]:
     ]
     result = [
         re.sub(r'^ray\[default\]', 'ray-default', req)
+        for req in result
+    ]
+    result = [
+        re.sub(r'^uvicorn\[standard\]', 'uvicorn-standard', req)
         for req in result
     ]
     return result
