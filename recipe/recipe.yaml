@@ -16,7 +16,7 @@ build:
     entry_points:
       - sky  =  sky.cli:cli
   noarch: python
-  number: 0
+  number: 1
 
 outputs:
   - package:
@@ -51,7 +51,7 @@ outputs:
         - requests
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           imports:
             - sky
           pip_check: true
@@ -72,12 +72,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -111,7 +110,7 @@ outputs:
   #     - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #   - python:
-  #       python_version: ${{ python_min }}
+  #       python_version: ${{ python_min }}.*
   #       pip_check: true
   #       imports:
   #       - sky
@@ -139,12 +138,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -168,7 +166,7 @@ outputs:
   #     - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #   - python:
-  #       python_version: ${{ python_min }}
+  #       python_version: ${{ python_min }}.*
   #       pip_check: true
   #       imports:
   #       - sky
@@ -193,12 +191,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -219,7 +216,7 @@ outputs:
   #       - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #     - python:
-  #         python_version: ${{ python_min }}
+  #         python_version: ${{ python_min }}.*
   #         pip_check: true
   #         imports:
   #           - sky
@@ -244,12 +241,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -275,7 +271,7 @@ outputs:
   #     - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #   - python:
-  #       python_version: ${{ python_min }}
+  #       python_version: ${{ python_min }}.*
   #       pip_check: true
   #       imports:
   #       - sky
@@ -299,12 +295,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -323,12 +318,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -348,12 +342,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -374,7 +367,7 @@ outputs:
   #       - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #     - python:
-  #         python_version: ${{ python_min }}
+  #         python_version: ${{ python_min }}.*
   #         pip_check: true
   #         imports:
   #           - sky
@@ -408,12 +401,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -435,7 +427,7 @@ outputs:
   #     - ${{ pin_subpackage('skypilot', exact=True) }}
   #   tests:
   #   - python:
-  #       python_version: ${{ python_min }}
+  #       python_version: ${{ python_min }}.*
   #       pip_check: true
   #       imports:
   #       - sky
@@ -459,12 +451,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
@@ -483,12 +474,11 @@ outputs:
         - ${{ pin_subpackage('skypilot', exact=True) }}
     tests:
       - python:
-          python_version: ${{ python_min }}
+          python_version: ${{ python_min }}.*
           pip_check: true
           imports:
             - sky
-      - files:
-        requirements:
+      - requirements:
           run:
             - python ${{ python_min }}.*
             - pip
