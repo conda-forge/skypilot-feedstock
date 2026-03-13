@@ -1,5 +1,5 @@
 context:
-  version: "0.8.1"
+  version: "0.11.1"
   python_min: '3.9'
 
 recipe:
@@ -8,7 +8,7 @@ recipe:
 
 source:
   - url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-    sha256: 03f456a48ceed017914b40b683afe4de60bd39653638602337060198079766a6
+    sha256: c37913613077d10cdf0b8b7428a338256aa875a7070d98dfc86dbf91242ba9ba
 
 build:
   script: ${{ PYTHON }} -m pip install .
@@ -16,7 +16,7 @@ build:
     entry_points:
       - sky  =  sky.cli:cli
   noarch: python
-  number: 1
+  number: 0
 
 outputs:
   - package:
