@@ -22,6 +22,7 @@ import json
 import requests
 import logging
 from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
 import re
 import tempfile
@@ -40,6 +41,10 @@ PIN_SUBPACKAGE = "${{ pin_subpackage('skypilot', exact=True) }}"
 # The 'all' extra is the union of every other extra, so shipping it would be
 # both excessive and redundant.
 IGNORED_EXTRAS = {"all"}
+
+# Stands in for the package itself in the triage table, which reports the core
+# output alongside the extras.
+CORE = "(core)"
 
 # The package is noarch, so markers cannot be honoured at install time. We
 # evaluate them against every environment the recipe supports and keep a
@@ -133,13 +138,25 @@ def sdist_sha256(metadata: dict) -> str:
     return sdists[0]["digests"]["sha256"]
 
 
-def conda_name(pypi_name: str) -> str:
+def conda_name(pypi_name: str, latest: Optional[Dict[str, str]] = None) -> str:
+    """The conda-forge name for a PyPI package.
+
+    Where the mapping has no entry it falls back to the normalised PyPI name,
+    which gets the punctuation wrong for feedstocks that kept an underscore
+    (huggingface_hub, for one). When we know what the channel contains, try the
+    punctuation variants before declaring a package missing.
+    """
     if pypi_name.lower() in NAME_OVERRIDES:
         return NAME_OVERRIDES[pypi_name.lower()]
-    return pypi_name_to_conda_name(pypi_name, mapping_url=DEFAULT_MAPPING_URL)
+    name = pypi_name_to_conda_name(pypi_name, mapping_url=DEFAULT_MAPPING_URL)
+    if latest is not None and name not in latest:
+        for candidate in (name.replace("-", "_"), name.replace("_", "-")):
+            if candidate in latest:
+                return candidate
+    return name
 
 
-def conda_requirement(requirement: Requirement) -> str:
+def conda_requirement(requirement: Requirement, latest: Dict[str, str]) -> str:
     """Render an upstream requirement as a conda-forge match spec.
 
     Any marker has already been accounted for by is_required_for_extras, and a
@@ -148,7 +165,7 @@ def conda_requirement(requirement: Requirement) -> str:
     """
     if requirement.extras:
         raise NotImplementedError(f"Contains extras: {requirement}")
-    name = conda_name(requirement.name)
+    name = conda_name(requirement.name, latest)
     version = poetry_version_to_conda_version(str(requirement.specifier))
     return f"{name} {version}".rstrip()
 
@@ -208,7 +225,7 @@ def blocker(
     A package can exist yet be too old to satisfy the upstream constraint, which
     is just as much a reason not to ship an output as it being absent entirely.
     """
-    name = conda_name(requirement.name)
+    name = conda_name(requirement.name, latest)
     if name not in latest:
         return f"{name} (absent)"
     if not requirement.specifier:
@@ -233,26 +250,42 @@ def split_requirements(
     core_requirements = [
         req for req in upstream_requirements if is_required_for_extras(req, [])
     ]
+    # Every extra output depends on an exact pin of the core package, so a
+    # constraint the core already imposes does not need repeating. Upstream
+    # restates its server dependencies under each cloud extra; a constraint is
+    # only kept when it is tighter than the core one (aws pinning colorama, say).
+    core_constraints = {
+        (canonicalize_name(req.name), str(req.specifier)) for req in core_requirements
+    }
+
+    def is_redundant(requirement: Requirement) -> bool:
+        key = (canonicalize_name(requirement.name), str(requirement.specifier))
+        return key in core_constraints
+
     requirements_for_extras = {
         extra: [
             req
             for req in upstream_requirements
-            if req not in core_requirements and is_required_for_extras(req, [extra])
+            if req not in core_requirements
+            and not is_redundant(req)
+            and is_required_for_extras(req, [extra])
         ]
         for extra in extras
     }
 
-    core_and_extras = set(core_requirements) | set(
-        sum(requirements_for_extras.values(), [])
+    accounted_for = (
+        set(core_requirements)
+        | set(sum(requirements_for_extras.values(), []))
+        | {req for req in upstream_requirements if is_redundant(req)}
     )
-    if not set(upstream_requirements) == core_and_extras:
+    if not set(upstream_requirements) == accounted_for:
         logger.error(
             "Upstream requirements do not match core requirements "
             "and requirements for extras:"
         )
-        for req in core_and_extras - set(upstream_requirements):
+        for req in accounted_for - set(upstream_requirements):
             logger.error(f"Unexpected requirement: {req}")
-        for req in set(upstream_requirements) - core_and_extras:
+        for req in set(upstream_requirements) - accounted_for:
             logger.error(f"Missing requirement: {req}")
         raise ValueError("Inconsistent requirements.")
 
@@ -272,17 +305,28 @@ def deduplicate(requirements: Sequence[Requirement]) -> List[Requirement]:
 
 
 def triage_extras(
+    core_requirements: List[Requirement],
     requirements_for_extras: Dict[str, List[Requirement]],
+    latest: Dict[str, str],
+    session: requests.Session,
 ) -> Dict[str, Tuple[str, List[str]]]:
     """Classify each extra as shippable, vacuous, ignored, or blocked.
 
     Returns a mapping of extra -> (status, blockers), where status is one of
     "ship", "vacuous", "ignored", or "blocked".
     """
-    session = requests.Session()
-    latest = latest_conda_forge_versions(session)
     cache: Dict[str, List[str]] = {}
     triage: Dict[str, Tuple[str, List[str]]] = {}
+    core_blockers = sorted(
+        {
+            reason
+            for reason in (
+                blocker(req, latest, cache, session) for req in core_requirements
+            )
+            if reason is not None
+        }
+    )
+    triage[CORE] = ("blocked" if core_blockers else "ship", core_blockers)
     for extra, requirements in sorted(requirements_for_extras.items()):
         if extra in IGNORED_EXTRAS:
             triage[extra] = ("ignored", [])
@@ -408,9 +452,17 @@ def main() -> None:
     extras = metadata["info"]["provides_extra"]
     core_requirements, requirements_for_extras = split_requirements(metadata)
 
-    print("\nExtras:")
-    triage = triage_extras(requirements_for_extras)
+    session = requests.Session()
+    latest = latest_conda_forge_versions(session)
+
+    print("\nOutputs:")
+    triage = triage_extras(core_requirements, requirements_for_extras, latest, session)
     report_triage(triage)
+    if triage[CORE][0] == "blocked":
+        print(
+            "\nThe core package itself cannot be built on conda-forge:\n  "
+            + "\n  ".join(triage[CORE][1])
+        )
 
     outputs = {output["package"]["name"]: output for output in recipe["outputs"]}
     assert name in outputs, f"{name} not found in outputs"
@@ -428,7 +480,11 @@ def main() -> None:
             )
         outputs_for_extras[output_suffix] = outputs[output]
 
-    shippable = {extra for extra, (status, _) in triage.items() if status == "ship"}
+    shippable = {
+        extra
+        for extra, (status, _) in triage.items()
+        if status == "ship" and extra != CORE
+    }
     unshipped = shippable - set(outputs_for_extras)
     if unshipped:
         print(f"\nShippable extras with no output: {', '.join(sorted(unshipped))}")
@@ -455,7 +511,9 @@ def main() -> None:
         else:
             requirements = requirements_for_extras[extra]
             print(f"Checking '{extra}' extra requirements")
-        expected = [conda_requirement(req) for req in deduplicate(requirements)]
+        expected = [
+            conda_requirement(req, latest) for req in deduplicate(requirements)
+        ]
 
         run = output_recipe["requirements"]["run"]
         # The leading python entry and the trailing pin are recipe scaffolding
