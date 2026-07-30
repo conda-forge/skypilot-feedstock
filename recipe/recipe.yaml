@@ -496,5 +496,6 @@ about:
 extra:
   feedstock_name: skypilot
   recipe-maintainers:
+    - rsignell
     - ocefpaf
     - maresb
