@@ -1,9 +1,18 @@
 # KNOWN BLOCKER: this recipe cannot build until casbin and sqlalchemy_adapter
 # are packaged on conda-forge. Both became core requirements of skypilot in
 # 0.10.0, so every release from 0.10.0 onwards is affected; 0.9.3 was the last
-# buildable one. Both are pure-Python, Apache-2.0, and their own dependencies
-# (simpleeval, sqlalchemy) are already on conda-forge, so two staged-recipes
-# submissions should be enough to unblock this.
+# buildable one. Neither has ever been submitted to staged-recipes, and no
+# issue or PR anywhere in the conda-forge org mentions them.
+#
+# Both are pure-Python and Apache-2.0, but PyCasbin publishes the same code
+# under two PyPI names, and the wheels for both install a top-level 'casbin'
+# module (plus, oddly, a node_modules directory):
+#     casbin    1.43.0   <- what skypilot requires
+#     pycasbin  2.8.0    <- what sqlalchemy_adapter requires
+# Two conda packages cannot both own site-packages/casbin, so packaging them
+# as-is would produce a conflict. The sqlalchemy-adapter recipe should depend
+# on whichever of the two gets a feedstock, rather than mirroring its upstream
+# pycasbin requirement.
 context:
   version: "0.13.0"
   python_min: '3.9'
