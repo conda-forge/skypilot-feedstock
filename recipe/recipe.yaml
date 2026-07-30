@@ -13,6 +13,13 @@
 # as-is would produce a conflict. The sqlalchemy-adapter recipe should depend
 # on whichever of the two gets a feedstock, rather than mirroring its upstream
 # pycasbin requirement.
+#
+# SECOND BLOCKER: this feedstock is only registered to publish the eleven
+# outputs it had before this update. conda-forge/feedstock-outputs sets
+# auto_register_all to false and skypilot is not in the autoreg allowlist, so
+# the fourteen outputs added here would build and then be rejected at upload.
+# They need registering first via a conda-forge/admin-requests PR using the
+# add_feedstock_output action.
 context:
   version: "0.13.0"
   python_min: '3.9'
