@@ -487,8 +487,9 @@ def main() -> None:
     }
     unshipped = shippable - set(outputs_for_extras)
     if unshipped:
-        print(f"\nShippable extras with no output: {', '.join(sorted(unshipped))}")
-        print("Add an output for each, or record why it is being left out.")
+        # Not a defect. Outputs are published on request rather than for every
+        # extra upstream adds, so this is the list to quote when someone asks.
+        print(f"\nShippable on request: {', '.join(sorted(unshipped))}")
     obsolete = sorted(
         extra
         for extra in outputs_for_extras

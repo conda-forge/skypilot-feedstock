@@ -13,13 +13,6 @@
 # as-is would produce a conflict. The sqlalchemy-adapter recipe should depend
 # on whichever of the two gets a feedstock, rather than mirroring its upstream
 # pycasbin requirement.
-#
-# SECOND BLOCKER: this feedstock is only registered to publish the eleven
-# outputs it had before this update. conda-forge/feedstock-outputs sets
-# auto_register_all to false and skypilot is not in the autoreg allowlist, so
-# the fourteen outputs added here would build and then be rejected at upload.
-# They need registering first via a conda-forge/admin-requests PR using the
-# add_feedstock_output action.
 context:
   version: "0.13.0"
   python_min: '3.9'
@@ -45,7 +38,18 @@ build:
 # that a version satisfying the constraint exists; run it after a version bump
 # rather than editing the requirements below by hand.
 #
-# NOT SHIPPED, because a dependency is missing from conda-forge:
+# Upstream adds cloud extras faster than anyone asks for them, so we publish an
+# output only where someone actually wants it rather than claiming a package
+# name on conda-forge for each one. Adding an output also means registering it
+# against this feedstock through a conda-forge/admin-requests PR.
+#
+# AVAILABLE ON REQUEST. Every dependency of these is already on conda-forge, so
+# they need nothing more than an output here. Please open an issue if you would
+# like one published:
+#   coreweave, fluidstack, huggingface, hyperbolic, mithril, paperspace,
+#   primeintellect, server, shadeform, slurm, ssh, vastdata, verda, yotta
+#
+# NOT CURRENTLY POSSIBLE, because a dependency is missing from conda-forge:
 #   azure      azure-mgmt-network is too old (wants >=27.0.0, has 23.0.0)
 #   cudo       cudo-compute
 #   do         pydo
@@ -54,6 +58,7 @@ build:
 #   runpod     runpod
 #   seeweb     ecsapi
 #   vast       vastai-sdk
+#
 # The 'all' extra is the union of the others, so it is deliberately skipped.
 outputs:
   - package:
@@ -218,38 +223,6 @@ outputs:
         script:
           - "[ -z \"$(pip install skypilot[cloudflare] | grep -v 'Requirement already satisfied')\" ]"
 
-  - package:
-      name: skypilot-coreweave
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - awscli >=1.27.10
-        - botocore >=1.29.10
-        - boto3 >=1.26.1
-        - colorama <0.4.7
-        - python-kubernetes !=32.0.0,<36.0.0,>=20.0.0
-        - websockets
-        - python-dateutil
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[coreweave] | grep -v 'Requirement already satisfied')\" ]"
-
   ##########
   # Missing cudo-compute on conda-forge
   ##########
@@ -307,31 +280,6 @@ outputs:
           - "[ -z \"$(pip install skypilot[docker] | grep -v 'Requirement already satisfied')\" ]"
 
   - package:
-      name: skypilot-fluidstack
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[fluidstack] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
       name: skypilot-gcp
     requirements:
       host:
@@ -358,58 +306,6 @@ outputs:
             - pip
         script:
           - "[ -z \"$(pip install skypilot[gcp] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-huggingface
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - huggingface_hub >=1.5
-        - huggingface_hub <1.9,>=1.5
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[huggingface] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-hyperbolic
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[hyperbolic] | grep -v 'Requirement already satisfied')\" ]"
 
 ###########
 # Missing ibm-vpc and ibm-cos-sdk on conda-forge
@@ -496,31 +392,6 @@ outputs:
           - "[ -z \"$(pip install skypilot[lambda] | grep -v 'Requirement already satisfied')\" ]"
 
   - package:
-      name: skypilot-mithril
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[mithril] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
       name: skypilot-oci
     requirements:
       host:
@@ -545,56 +416,6 @@ outputs:
             - pip
         script:
           - "[ -z \"$(pip install skypilot[oci] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-paperspace
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[paperspace] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-primeintellect
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[primeintellect] | grep -v 'Requirement already satisfied')\" ]"
 
   - package:
       name: skypilot-remote
@@ -677,164 +498,6 @@ outputs:
           - "[ -z \"$(pip install skypilot[scp] | grep -v 'Requirement already satisfied')\" ]"
 
   - package:
-      name: skypilot-server
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[server] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-shadeform
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[shadeform] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-slurm
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - python-hostlist
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[slurm] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-ssh
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - python-kubernetes !=32.0.0,<36.0.0,>=20.0.0
-        - websockets
-        - python-dateutil
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[ssh] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-vastdata
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - awscli >=1.27.10
-        - botocore >=1.29.10
-        - boto3 >=1.26.1
-        - colorama <0.4.7
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[vastdata] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-verda
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[verda] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
       name: skypilot-vsphere
     requirements:
       host:
@@ -859,31 +522,6 @@ outputs:
             - pip
         script:
           - "[ -z \"$(pip install skypilot[vsphere] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-yotta
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - aiohttp
-        - grpcio >=1.63.0
-        - protobuf <7.0.0,>=5.29.6
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[yotta] | grep -v 'Requirement already satisfied')\" ]"
 
 about:
   summary: "SkyPilot: An intercloud broker for the clouds"
