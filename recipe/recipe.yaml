@@ -1,5 +1,5 @@
 context:
-  version: "0.8.1"
+  version: "0.13.0"
   python_min: '3.9'
 
 recipe:
@@ -8,7 +8,7 @@ recipe:
 
 source:
   - url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-    sha256: 03f456a48ceed017914b40b683afe4de60bd39653638602337060198079766a6
+    sha256: 0bd0c59a649d59fa21f1093534318e6c2f50b30e10fb3f54f4d702acf2615fb7
 
 build:
   script: ${{ PYTHON }} -m pip install .
