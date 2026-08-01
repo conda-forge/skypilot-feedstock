@@ -17,10 +17,11 @@ Current build status
 ====================
 
 
-<table><tr><td>All platforms:</td>
+<table><tr>
+    <td>All platforms:</td>
     <td>
-      <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=24717&branchName=main">
-        <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/skypilot-feedstock?branchName=main">
+      <a href="https://github.com/conda-forge/skypilot-feedstock/actions/workflows/conda-build.yml">
+        <img src="https://github.com/conda-forge/skypilot-feedstock/actions/workflows/conda-build.yml/badge.svg?event=push&branch=main">
       </a>
     </td>
   </tr>
@@ -32,16 +33,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot-green.svg)](https://anaconda.org/conda-forge/skypilot) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot.svg)](https://anaconda.org/conda-forge/skypilot) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot.svg)](https://anaconda.org/conda-forge/skypilot) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot.svg)](https://anaconda.org/conda-forge/skypilot) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--aws-green.svg)](https://anaconda.org/conda-forge/skypilot-aws) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-aws.svg)](https://anaconda.org/conda-forge/skypilot-aws) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-aws.svg)](https://anaconda.org/conda-forge/skypilot-aws) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-aws.svg)](https://anaconda.org/conda-forge/skypilot-aws) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--cloudflare-green.svg)](https://anaconda.org/conda-forge/skypilot-cloudflare) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-cloudflare.svg)](https://anaconda.org/conda-forge/skypilot-cloudflare) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-cloudflare.svg)](https://anaconda.org/conda-forge/skypilot-cloudflare) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-cloudflare.svg)](https://anaconda.org/conda-forge/skypilot-cloudflare) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--docker-green.svg)](https://anaconda.org/conda-forge/skypilot-docker) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-docker.svg)](https://anaconda.org/conda-forge/skypilot-docker) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-docker.svg)](https://anaconda.org/conda-forge/skypilot-docker) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-docker.svg)](https://anaconda.org/conda-forge/skypilot-docker) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--gcp-green.svg)](https://anaconda.org/conda-forge/skypilot-gcp) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-gcp.svg)](https://anaconda.org/conda-forge/skypilot-gcp) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-gcp.svg)](https://anaconda.org/conda-forge/skypilot-gcp) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-gcp.svg)](https://anaconda.org/conda-forge/skypilot-gcp) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--kubernetes-green.svg)](https://anaconda.org/conda-forge/skypilot-kubernetes) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-kubernetes.svg)](https://anaconda.org/conda-forge/skypilot-kubernetes) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-kubernetes.svg)](https://anaconda.org/conda-forge/skypilot-kubernetes) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-kubernetes.svg)](https://anaconda.org/conda-forge/skypilot-kubernetes) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--lambda-green.svg)](https://anaconda.org/conda-forge/skypilot-lambda) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-lambda.svg)](https://anaconda.org/conda-forge/skypilot-lambda) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-lambda.svg)](https://anaconda.org/conda-forge/skypilot-lambda) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-lambda.svg)](https://anaconda.org/conda-forge/skypilot-lambda) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--oci-green.svg)](https://anaconda.org/conda-forge/skypilot-oci) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-oci.svg)](https://anaconda.org/conda-forge/skypilot-oci) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-oci.svg)](https://anaconda.org/conda-forge/skypilot-oci) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-oci.svg)](https://anaconda.org/conda-forge/skypilot-oci) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--remote-green.svg)](https://anaconda.org/conda-forge/skypilot-remote) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-remote.svg)](https://anaconda.org/conda-forge/skypilot-remote) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-remote.svg)](https://anaconda.org/conda-forge/skypilot-remote) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-remote.svg)](https://anaconda.org/conda-forge/skypilot-remote) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--scp-green.svg)](https://anaconda.org/conda-forge/skypilot-scp) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-scp.svg)](https://anaconda.org/conda-forge/skypilot-scp) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-scp.svg)](https://anaconda.org/conda-forge/skypilot-scp) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-scp.svg)](https://anaconda.org/conda-forge/skypilot-scp) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--vsphere-green.svg)](https://anaconda.org/conda-forge/skypilot-vsphere) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-vsphere.svg)](https://anaconda.org/conda-forge/skypilot-vsphere) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-vsphere.svg)](https://anaconda.org/conda-forge/skypilot-vsphere) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-vsphere.svg)](https://anaconda.org/conda-forge/skypilot-vsphere) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-skypilot--extras-green.svg)](https://anaconda.org/conda-forge/skypilot-extras) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/skypilot-extras.svg)](https://anaconda.org/conda-forge/skypilot-extras) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/skypilot-extras.svg)](https://anaconda.org/conda-forge/skypilot-extras) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/skypilot-extras.svg)](https://anaconda.org/conda-forge/skypilot-extras) |
 
 Installing skypilot
 ===================
@@ -53,16 +45,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `skypilot, skypilot-aws, skypilot-cloudflare, skypilot-docker, skypilot-gcp, skypilot-kubernetes, skypilot-lambda, skypilot-oci, skypilot-remote, skypilot-scp, skypilot-vsphere` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `skypilot, skypilot-extras` can be installed with `conda`:
 
 ```
-conda install skypilot skypilot-aws skypilot-cloudflare skypilot-docker skypilot-gcp skypilot-kubernetes skypilot-lambda skypilot-oci skypilot-remote skypilot-scp skypilot-vsphere
+conda install skypilot skypilot-extras
 ```
 
 or with `mamba`:
 
 ```
-mamba install skypilot skypilot-aws skypilot-cloudflare skypilot-docker skypilot-gcp skypilot-kubernetes skypilot-lambda skypilot-oci skypilot-remote skypilot-scp skypilot-vsphere
+mamba install skypilot skypilot-extras
 ```
 
 It is possible to list all of the versions of `skypilot` available on your platform with `conda`:
@@ -112,12 +104,12 @@ it is possible to build and upload installable packages to the
 [conda-forge](https://anaconda.org/conda-forge) [anaconda.org](https://anaconda.org/)
 channel for Linux, Windows and OSX respectively.
 
-To manage the continuous integration and simplify feedstock maintenance
+To manage the continuous integration and simplify feedstock maintenance,
 [conda-smithy](https://github.com/conda-forge/conda-smithy) has been developed.
 Using the ``conda-forge.yml`` within this repository, it is possible to re-render all of
 this feedstock's supporting files (e.g. the CI configuration files) with ``conda smithy rerender``.
 
-For more information please check the [conda-forge documentation](https://conda-forge.org/docs/).
+For more information, please check the [conda-forge documentation](https://conda-forge.org/docs/).
 
 Terminology
 ===========
@@ -144,7 +136,7 @@ merged, the recipe will be re-built and uploaded automatically to the
 everybody to install and use from the `conda-forge` channel.
 Note that all branches in the conda-forge/skypilot-feedstock are
 immediately built and any created packages are uploaded, so PRs should be based
-on branches in forks and branches in the main repository should only be used to
+on branches in forks, and branches in the main repository should only be used to
 build distinct package versions.
 
 In order to produce a uniquely identifiable distribution:
