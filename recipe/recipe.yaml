@@ -1,22 +1,24 @@
 context:
-  version: "0.8.1"
-  python_min: '3.9'
+  version: "0.13.0"
 
 recipe:
-  name: skypilot
+  name: skypilot-split
   version: ${{ version }}
 
 source:
-  - url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-    sha256: 03f456a48ceed017914b40b683afe4de60bd39653638602337060198079766a6
+  url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
+  sha256: 0bd0c59a649d59fa21f1093534318e6c2f50b30e10fb3f54f4d702acf2615fb7
+  patches:
+    # pip-check looks for casbin, which was renamed to pycasin upstrean.
+    - casbin_is_pycasbin.patch
 
 build:
-  script: ${{ PYTHON }} -m pip install .
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   python:
     entry_points:
       - sky  =  sky.cli:cli
-  noarch: python
-  number: 1
 
 outputs:
   - package:
@@ -24,466 +26,144 @@ outputs:
     requirements:
       host:
         - python ${{ python_min }}.*
-        - setuptools
+        - setuptools >=58.0
         - pip
       run:
         - python >=${{ python_min }}
-        - wheel <0.46.0
+        - aiofiles
+        - aiohttp >=3.13.3
+        - aiosqlite
+        - alembic >=1.8.0
+        - anyio
+        - asyncpg
+        - bcrypt ==4.0.1
         - cachetools
-        - click >=7.0
+        - pycasbin
+        - click >=7.0,<8.2.0
         - colorama
         - cryptography
+        - fastapi
+        - filelock >=3.15.0
+        - gitpython
+        - greenlet
+        - httpx
+        - ijson
         - jinja2 >=3.0
         - jsonschema
         - networkx
-        - pandas >=1.3.0
-        - pendulum
-        - prettytable >=2.0.0
-        - python-dotenv
-        - rich
-        - tabulate
-        - typing_extensions
-        - filelock >=3.6.0
+        - orjson
         - packaging
+        - pandas >=1.3.0
+        - paramiko
+        - passlib
+        - pendulum
+        - pip
+        - prettytable >=2.0.0
+        - prometheus_client >=0.8.0
         - psutil
+        - psycopg2-binary
         - pulp
-        - pyyaml !=5.4.*,>3.13
+        - pydantic !=2.0,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3,>2
+        - pyjwt
+        - python-dotenv
+        - python-multipart
+        - pyyaml >3.13,!=5.4.*
         - requests
+        - rich
+        - setproctitle
+        - setuptools
+        - sqlalchemy >=2.0.16
+        - sqlalchemy_adapter
+        - tabulate
+        - tqdm
+        - types-paramiko
+        - typing_extensions
+        - uvicorn >=0.33.0,<0.36.0
+        - wheel >=0.46.3
     tests:
       - python:
-          python_version: ${{ python_min }}.*
+          python_version:
+            - ${{ python_min }}.*
+            - "*"
           imports:
             - sky
           pip_check: true
 
+# There are more than 30 extras options:
+# aws, azure, cloudflare, coreweave, cudo, do, docker, fluidstack, gcp, huggingface, hyperbolic,
+# ibm, kubernetes, lambda, mithril, nebius, oci, paperspace, primeintellect, remote, runpod, scp,
+# seeweb, server, shadeform, slurm, ssh, vast, vastdata, verda, vsphere, yotta.
+# I will aggregate them all into one until we have better tools to handle optional dependencies updates.
+# NB: There are some extras that differ! What a nightmare to install!!
+# I'll use what the solver can return here prioritizing updates dependencies.
+
   - package:
-      name: skypilot-aws
+      name: skypilot-extras
     requirements:
       host:
         - python ${{ python_min }}.*
         - setuptools
         - pip
       run:
-        - urllib3 <2
-        - awscli >=1.27.10
-        - botocore >=1.29.10
-        - boto3 >=1.26.1
-        - colorama <0.4.5
         - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[aws] | grep -v 'Requirement already satisfied')\" ]"
-
-########
-# Many of the required conda-forge packages currently outdated.
-# Furthermore, azure-cli is not available on conda-forge.
-# Thus it would require some work to do this properly, so we'll
-# skip it for now.
-########
-  # - package:
-  #     name: skypilot-azure
-  #   requirements:
-  #     host:
-  #     - python ${{ python_min }}.*
-  #     - setuptools
-  #     - pip
-  #     run:
-  #     # The following should be azure-cli instead of azure-cli-core,
-  #     # but azure-cli is not available on conda-forge.
-  #     - azure-cli-core >=2.65.0
-  #     - azure-core >=1.31.0
-  #     - azure-identity >=1.19.0
-  #     - azure-mgmt-network >=27.0.0
-  #     - azure-mgmt-compute >=33.0.0
-  #     - azure-storage-blob >=12.23.1
-  #     - msgraph-sdk
-  #     - ray-default !=2.6.0,>=2.2.0
-  #     - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #   - python:
-  #       python_version: ${{ python_min }}.*
-  #       pip_check: true
-  #       imports:
-  #       - sky
-  #   - files:
-  #     requirements:
-  #       run:
-  #       - python ${{ python_min }}.*
-  #       - pip
-  #     script:
-  #     - "[ -z \"$(pip install skypilot[azure] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-cloudflare
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - urllib3 <2
         - awscli >=1.27.10
-        - botocore >=1.29.10
+        - azure-common
+        - azure-core >=1.24.0
+        - azure-core >=1.31.0
+        - azure-identity>=1.19.0
+        - azure-mgmt-compute >=33.0.0
+        # NB: Missing version of dependency on conda-forge.
+        # - azure-cli >=2.65.0,<2.87.0
+        # - azure-mgmt-network >=27.0.0
+        - azure-storage-blob >=12.23.1
         - boto3 >=1.26.1
-        - colorama <0.4.5
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[cloudflare] | grep -v 'Requirement already satisfied')\" ]"
-
-  ##########
-  # Missing cudo-compute on conda-forge
-  ##########
-  # - package:
-  #     name: skypilot-cudo
-  #   requirements:
-  #     host:
-  #     - python ${{ python_min }}.*
-  #     - setuptools
-  #     - pip
-  #     run:
-  #     - cudo-compute >=0.1.10
-  #     - docker
-  #     - ray-default !=2.6.0,>=2.2.0
-  #     - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #   - python:
-  #       python_version: ${{ python_min }}.*
-  #       pip_check: true
-  #       imports:
-  #       - sky
-  #   - files:
-  #     requirements:
-  #       run:
-  #       - python ${{ python_min }}.*
-  #       - pip
-  #   script:
-  #   - "[ -z \"$(pip install skypilot[cudo] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-docker
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
+        - botocore >=1.29.10
+        - colorama <0.4.7
         - docker-py
-        - ray-default !=2.6.0,>=2.2.0
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[docker] | grep -v 'Requirement already satisfied')\" ]"
-
-  ##########
-  # This extra is vacuous, thus not worthy of adding.
-  ##########
-  # - package:
-  #     name: skypilot-fluidstack
-  #   requirements:
-  #     host:
-  #       - python ${{ python_min }}.*
-  #       - setuptools
-  #       - pip
-  #     run:
-  #       - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #     - python:
-  #         python_version: ${{ python_min }}.*
-  #         pip_check: true
-  #         imports:
-  #           - sky
-  #     - files:
-  #       requirements:
-  #         run:
-  #           - python ${{ python_min }}.*
-  #           - pip
-  #       script:
-  #       - "[ -z \"$(pip install skypilot[fluidstack] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-gcp
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
         - google-api-python-client >=2.69.0
         - google-cloud-storage
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[gcp] | grep -v 'Requirement already satisfied')\" ]"
-
-###########
-# Missing ibm-vpc and ibm-cos-sdk on conda-forge
-###########
-  # - package:
-  #     name: skypilot-ibm
-  #   requirements:
-  #     host:
-  #     - python ${{ python_min }}.*
-  #     - setuptools
-  #     - pip
-  #     run:
-  #     - ibm-cloud-sdk-core
-  #     - ibm-vpc
-  #     - ibm-platform-services
-  #     - ibm-cos-sdk
-  #     - ray-default !=2.6.0,>=2.2.0
-  #     - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #   - python:
-  #       python_version: ${{ python_min }}.*
-  #       pip_check: true
-  #       imports:
-  #       - sky
-  #   - files:
-  #     requirements:
-  #       run:
-  #       - python ${{ python_min }}.*
-  #       - pip
-  #   script:
-  #   - "[ -z \"$(pip install skypilot[ibm] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-kubernetes
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - python-kubernetes !=32.0.0,>=20.0.0
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[kubernetes] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-lambda
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - ray-default !=2.6.0,>=2.2.0
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[lambda] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-oci
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
+        - grpcio >=1.63.0
+        - huggingface_hub >=1.5
+        - ibm-cloud-sdk-core
+        - ibm-cos-sdk
+        - ibm-platform-services >=0.48.0
+        - msgraph-sdk
+        - msrestazure
         - oci
-        - ray-default !=2.6.0,>=2.2.0
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[oci] | grep -v 'Requirement already satisfied')\" ]"
-
-  ##########
-  # This extra is vacuous, thus not worthy of adding.
-  ##########
-  # - package:
-  #     name: skypilot-paperspace
-  #   requirements:
-  #     host:
-  #       - python ${{ python_min }}.*
-  #       - setuptools
-  #       - pip
-  #     run:
-  #       - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #     - python:
-  #         python_version: ${{ python_min }}.*
-  #         pip_check: true
-  #         imports:
-  #           - sky
-  #     - files:
-  #       requirements:
-  #         run:
-  #           - python ${{ python_min }}.*
-  #           - pip
-  #       script:
-  #       - "[ -z \"$(pip install skypilot[paperspace] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-remote
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-      # Take the intersection of all grpcio requirements to keep this noarch
-      # py<3.10, osx
-        - grpcio !=1.48.0,<=1.49.1,>=1.32.0
-      # py>=3.10, osx
-        - grpcio !=1.48.0,<=1.49.1,>=1.42.0
-      # py<3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.32.0
-      # py>=3.10, not osx
-        - grpcio !=1.48.0,<=1.51.3,>=1.42.0
-        - protobuf !=3.19.5,>=3.15.3
-        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[remote] | grep -v 'Requirement already satisfied')\" ]"
-
-  #####
-  # There is not yet any runpod package on conda-forge
-  #####
-  # - package:
-  #     name: skypilot-runpod
-  #   requirements:
-  #     host:
-  #     - python ${{ python_min }}.*
-  #     - setuptools
-  #     - pip
-  #     run:
-  #     - runpod >=1.5.1
-  #     - ${{ pin_subpackage('skypilot', exact=True) }}
-  #   tests:
-  #   - python:
-  #       python_version: ${{ python_min }}.*
-  #       pip_check: true
-  #       imports:
-  #       - sky
-  #   - files:
-  #     requirements:
-  #       run:
-  #       - python ${{ python_min }}.*
-  #       - pip
-  #   script:
-  #   - "[ -z \"$(pip install skypilot[runpod] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-scp
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
-        - ray-default !=2.6.0,>=2.2.0
-        - ${{ pin_subpackage('skypilot', exact=True) }}
-    tests:
-      - python:
-          python_version: ${{ python_min }}.*
-          pip_check: true
-          imports:
-            - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[scp] | grep -v 'Requirement already satisfied')\" ]"
-
-  - package:
-      name: skypilot-vsphere
-    requirements:
-      host:
-        - python ${{ python_min }}.*
-        - setuptools
-        - pip
-      run:
+        - passlib
+        - protobuf >=5.29.6,<7.0.0
+        - pycares<5
+        - pydantic !=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3,>2
+        - pyjwt
+        - pyopenssl >=23.2.0
+        - python-dateutil
+        - python-dotenv
+        - python-hostlist
+        - python-kubernetes !=32.0.0,<36.0.0,>=20.0.0
+        - python-multipart
         - pyvmomi ==8.0.1.0.2
-        - ${{ pin_subpackage('skypilot', exact=True) }}
+        - pyyaml !=5.4.*,>3.13
+        - ray-core >=2.6.1
+        - sqlalchemy_adapter
+        - tomli
+        - websockets
+        # Not on conda-forge.
+        # - cudo-compute >=0.1.10
+        # - ecsapi ==0.4.0
+        # - ibm-vpc
+        # - nebius >=0.3.59
+        # - pydo >=0.3.0
+        # - runpod >=1.6.1
+        # - vastai-sdk >=0.1.12
+
     tests:
       - python:
-          python_version: ${{ python_min }}.*
+          python_version:
+            - ${{ python_min }}.*
+            - "*"
           pip_check: true
           imports:
             - sky
-      - requirements:
-          run:
-            - python ${{ python_min }}.*
-            - pip
-        script:
-          - "[ -z \"$(pip install skypilot[vsphere] | grep -v 'Requirement already satisfied')\" ]"
 
 about:
   summary: "SkyPilot: An intercloud broker for the clouds"
