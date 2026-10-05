@@ -45,31 +45,73 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `skypilot, skypilot-extras` can be installed with `conda`:
+How to use
+----------
+
+<details>
+<summary>With conda</summary>
 
 ```
 conda install skypilot skypilot-extras
 ```
 
-or with `mamba`:
+</details>
+
+<details>
+<summary>With mamba</summary>
 
 ```
 mamba install skypilot skypilot-extras
 ```
 
-It is possible to list all of the versions of `skypilot` available on your platform with `conda`:
+</details>
+
+<details>
+<summary>With pixi</summary>
+
+```
+# for adding to your local project
+pixi add skypilot skypilot-extras
+# for installing globally
+pixi global install skypilot skypilot-extras
+```
+
+</details>
+
+Search package versions
+-----------------------
+
+It is possible to list all of the versions of `skypilot` available on your platform:
+
+<details>
+<summary>With conda</summary>
 
 ```
 conda search skypilot --channel conda-forge
 ```
 
-or with `mamba`:
+</details>
+
+<details>
+<summary>With mamba</summary>
 
 ```
 mamba search skypilot --channel conda-forge
 ```
 
-Alternatively, `mamba repoquery` may provide more information:
+</details>
+
+<details>
+<summary>With pixi</summary>
+
+```
+pixi search skypilot --channel conda-forge
+```
+
+</details>
+
+<details>
+<summary>With mamba repoquery, which may provide more information</summary>
 
 ```
 # Search all versions available on your platform:
@@ -81,6 +123,8 @@ mamba repoquery whoneeds skypilot --channel conda-forge
 # List dependencies of `skypilot`:
 mamba repoquery depends skypilot --channel conda-forge
 ```
+
+</details>
 
 
 About conda-forge
@@ -150,4 +194,6 @@ Feedstock Maintainers
 =====================
 
 * [@maresb](https://github.com/maresb/)
+* [@ocefpaf](https://github.com/ocefpaf/)
+* [@rsignell](https://github.com/rsignell/)
 
