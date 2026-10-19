@@ -1,5 +1,5 @@
 context:
-  version: "0.14.0"
+  version: "0.14.1"
 
 recipe:
   name: skypilot-split
@@ -7,7 +7,7 @@ recipe:
 
 source:
   url: https://pypi.org/packages/source/s/skypilot/skypilot-${{ version }}.tar.gz
-  sha256: e85b1c63debfcfb0e753c7847c74a9514d6891a3d59976ed1e933c1784369f99
+  sha256: 60c6d38e68999d67f9294f87e30808787caad682bd93274136a261f3606fac8d
   patches:
     # pip-check looks for casbin, which was renamed to pycasin upstrean.
     - casbin_is_pycasbin.patch
